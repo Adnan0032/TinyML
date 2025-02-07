@@ -1,27 +1,113 @@
-# 🚀 Drone Detection with Raspberry Pi 4 & ReSpeaker
+# 🚀 Drone Sound Detection using Raspberry Pi & TFLite  
 
-Ce projet implémente un système de détection de drones à l'aide d'un modèle d'intelligence artificielle embarqué sur un **Raspberry Pi 4**. Il utilise un **ReSpeaker** pour l'acquisition audio et un modèle **TensorFlow Lite (TFLite)** pour la classification en temps réel.
+## 📌 Description  
 
-## 🧠 Implémentation du Modèle AI
+Ce projet implémente un modèle d'IA pour détecter les drones à partir de fichiers audio en utilisant TensorFlow Lite (TFLite) sur un Raspberry Pi 4.  
 
-1. **Acquisition et Prétraitement des Données**
-   - Un dataset contenant des audios de drones et d'autres bruits a été collecté.
-   - Chaque enregistrement est découpé en segments de **2047 samples** (environ 0.125s à 16kHz).
-   - Le signal brut est normalisé avant d’être utilisé pour l'entraînement.
-
-2. **Entraînement du Modèle**
-   - Un modèle **CNN** a été entraîné sur ces données pour classer **drone vs. non-drone**.
-   - Le modèle a été converti en **TensorFlow Lite (TFLite)** pour une exécution optimisée sur Raspberry Pi.
-
-3. **Intégration dans le Raspberry Pi**
-   - Un script capte le son via le **ReSpeaker**, le découpe en segments d'1 seconde et l'enregistre.
-   - Un second script charge ces segments, les normalise et les envoie au modèle TFLite.
-   - Les résultats de classification s'affichent en temps réel.
+Il se compose de deux parties principales :  
+- **record_audio.py** : Enregistre l’audio en segments de 1 seconde à l’aide du ReSpeaker et les stocke dans `test_audios/`.  
+- **test_model.py** : Charge le modèle TFLite et effectue des prédictions sur les fichiers audio enregistrés.  
 
 ---
 
-## 📦 Installation
+## 🏗️ Implémentation du Modèle  
 
-### 1️⃣ Configurer le Raspberry Pi 4
-Assurez-vous que votre Raspberry Pi est à jour :
+### 🔹 1. Collecte et Prétraitement des Données  
+- Les enregistrements audio sont collectés à une fréquence d’échantillonnage de **16 kHz** en format **mono**.  
+- Les fichiers sont normalisés avant l'entraînement pour améliorer la robustesse du modèle.  
 
+### 🔹 2. Entraînement du Modèle  
+- Un modèle de **CNN (Convolutional Neural Network)** a été entraîné sur **2047 échantillons**.  
+- L’audio brut est utilisé comme entrée, sans transformation en spectrogramme.  
+
+### 🔹 3. Conversion en TensorFlow Lite  
+- Le modèle entraîné est converti en **TFLite** pour être exécuté efficacement sur un Raspberry Pi.  
+- Optimisations effectuées : **Quantization** pour réduire la taille et améliorer les performances.  
+
+---
+
+## 📂 Structure du Projet  
+
+```
+📂 drone-detection/
+ ├── 📂 models/               # Stockage du modèle
+ │    └── drone_detection.tflite
+ ├── 📂 test_audios/          # Stockage des enregistrements
+ ├── record_audio.py          # Script d'enregistrement audio
+ ├── test_model.py            # Script de test du modèle
+ ├── requirements.txt         # Dépendances Python
+ ├── .gitignore               # Fichiers à ignorer
+ ├── README.md                # Documentation du projet
+```
+
+---
+
+## 🛠️ Installation & Déploiement  
+
+### 📥 1. Cloner le dépôt  
+```bash
+git clone https://github.com/votre-utilisateur/drone-detection.git
+cd drone-detection
+```
+
+### 🏗️ 2. Installer les dépendances  
+```bash
+pip install -r requirements.txt
+```
+
+### 🎙️ 3. Configurer le ReSpeaker  
+- Vérifier que le ReSpeaker est bien détecté :  
+  ```bash
+  arecord -l
+  ```
+- Configurer `record_audio.py` pour utiliser l’index du périphérique audio.  
+
+---
+
+## 🎤 Utilisation  
+
+### 📝 1. Enregistrer un audio  
+```bash
+python record_audio.py
+```
+> 🔹 Génère des fichiers `.wav` dans `test_audios/`.  
+
+### 🤖 2. Tester le modèle sur un audio  
+```bash
+python test_model.py
+```
+> 🔹 Effectue la prédiction sur les fichiers `.wav` enregistrés.  
+
+---
+
+## 🖥️ Déploiement sur Raspberry Pi 4  
+
+### 📥 1. Transférer le projet sur le Raspberry Pi  
+Sur votre PC :  
+```bash
+scp -r drone-detection pi@<IP_RPI>:~/
+```
+
+### 🚀 2. Exécuter le projet  
+```bash
+cd drone-detection
+python test_model.py
+```
+
+---
+
+## 🛠️ Problèmes Connus & Améliorations  
+
+- 📌 **Le modèle détecte mal en présence de bruit**  
+  - 🛠️ Solution : Ajouter un **filtrage du bruit** avant l'inférence.  
+- 📌 **Temps d’inférence trop long**  
+  - 🛠️ Solution : Tester une **quantization INT8** pour accélérer le modèle sur le Raspberry Pi.  
+
+---
+
+## 📜 Licence  
+📄 Ce projet est sous licence **MIT**.  
+
+---  
+  
+🚀 *Développé avec passion par Adnane Ammi Douah (https://github.com//Adnan0032/).*
